@@ -4,7 +4,7 @@ import axios from "axios";
 class Profile extends React.Component {
   state = {
     isLoading: true,
-    api_key: "RGAPI-6003cb11-75ce-44ec-ad37-fc1bba1a4a7a",
+    api_key: "",
     name: this.props.location.state,
   };
   getSummonerInfo = async () => {
