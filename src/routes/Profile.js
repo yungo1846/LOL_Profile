@@ -6,8 +6,12 @@ class Profile extends React.Component {
   state = {
     isLoading: true,
     api_key: "",
+<<<<<<< HEAD
     name: "곤이씨", //this.props.location.state,
     matchInfoList: [],
+=======
+    name: this.props.location.state,
+>>>>>>> 83262253006719c3bb42ff853699fef8eb08d8d0
   };
   getSummonerInfo = async () => {
     var { data } = await axios.get(
