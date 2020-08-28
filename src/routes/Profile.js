@@ -10,7 +10,7 @@ class Profile extends React.Component {
   state = {
     isLoading: true,
     isSummonerExist: true,
-    api_key: "RGAPI-06bd7cd9-d97f-41d8-a3b4-a8a0aa6c61ee",
+    api_key: "",
     name: this.props.match.params.name, //this.props.location.profile,
     matchInfoList: [],
   };
