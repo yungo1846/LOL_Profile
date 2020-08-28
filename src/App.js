@@ -8,7 +8,7 @@ function App() {
   return (
     <HashRouter>
       <Route path="/" exact={true} component={Home} />
-      <Route path="/profile" component={Profile} />
+      <Route path="/profile/:name" component={Profile} />
     </HashRouter>
   );
 }
