@@ -2,14 +2,15 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import "../index.css";
 
-class Home extends React.Component {
+class Navigation extends React.Component {
   state = {
     name: "",
+    home: "http://localhost:3000/#/",
   };
 
   handleSubmit = () => {
     const { name } = this.state;
-    const href = "http://localhost:3000/#/"; //배포시 href 주소 바꿔야함! Navigation도!
+    const href = "http://localhost:3000/#/";
     if (name != "") {
       window.location.href = `${href}profile/${name}`;
     }
@@ -28,24 +29,25 @@ class Home extends React.Component {
   };
 
   render() {
-    const { name } = this.state;
+    const { name, home } = this.state;
     const { handleChange, keyPress } = this;
     return (
-      <div className="w-screen h-screen flex flex-col justify-center items-center bg-blue-200">
+      <div className="bg-blue-500 flex items-center">
         <Helmet>
           <script
             src="https://kit.fontawesome.com/843c5da1dc.js"
             crossorigin="anonymous"
           ></script>
         </Helmet>
-        <div className="flex flex-col items-center mb-10">
-          <img className="w-20 h-20 mb-3" src="/images/logo/lol_icon.png" />
-          <img className="h-32 p-2" src="/images/logo/logo2.png" />
+        <div className="mx-5 mt-3">
+          <a href={home}>
+            <img className="w-12 h-12 mb-3" src="/images/logo/lol_icon.png" />
+          </a>
         </div>
-        <div className="flex flex-row mb-20">
+        <div className="flex flex-row">
           <form>
             <input
-              className="w-64 h-12 text-center rounded-lg border border-blue-400 mr-3"
+              className="w-64 h-10 text-center rounded-lg border border-blue-400 mr-3"
               placeholder="이름"
               value={name}
               placeholder="소환사 이름으로 검색"
@@ -57,7 +59,7 @@ class Home extends React.Component {
             className="bg-indigo-600 w-12 text-white rounded-full"
             onClick={this.handleSubmit}
           >
-            <i class="fas fa-search"></i>
+            <i className="fas fa-search"></i>
           </button>
         </div>
       </div>
@@ -65,4 +67,4 @@ class Home extends React.Component {
   }
 }
 
-export default Home;
+export default Navigation;

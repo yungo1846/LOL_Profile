@@ -1,12 +1,15 @@
 import React from "react";
 import axios from "axios";
+import { Chart } from "chart.js";
 import "../index.css";
 import "./Profile.css";
-import { Chart } from "chart.js";
+import Navigation from "../components/Navigation";
+import loading from "./loading.svg";
 
 class Profile extends React.Component {
   state = {
     isLoading: true,
+    isSummonerExist: true,
     api_key: "RGAPI-06bd7cd9-d97f-41d8-a3b4-a8a0aa6c61ee",
     name: this.props.match.params.name, //this.props.location.profile,
     matchInfoList: [],
@@ -68,10 +71,17 @@ class Profile extends React.Component {
   }
 
   getSummonerInfo = async () => {
-    var { data } = await axios.get(
-      // 소환사 정보
-      `/lol/summoner/v4/summoners/by-name/${this.state.name}?api_key=${this.state.api_key}`
-    );
+    try {
+      var { data } = await axios.get(
+        // 소환사 정보
+        `/lol/summoner/v4/summoners/by-name/${this.state.name}?api_key=${this.state.api_key}`
+      );
+    } catch {
+      this.setState({
+        isSummonerExist: false,
+      });
+      return;
+    }
     // 가장 최근 패치버젼 확인
     var patchList = await axios.get(
       "https://ddragon.leagueoflegends.com/api/versions.json"
@@ -90,19 +100,30 @@ class Profile extends React.Component {
     var { data } = await axios.get(
       `/lol/league/v4/entries/by-summoner/${this.state.id}?api_key=${this.state.api_key}`
     );
-    var soloRankOrNOt = 0;
-    if (data.length === 2) {
-      soloRankOrNOt = 1;
+    if (data.length === 0) {
+      this.setState({
+        tier: "UnRanked",
+        rank: "",
+        leaguePoints: 0,
+        queueType: "",
+        totalWins: 0,
+        totalLosses: 0,
+      });
+    } else {
+      var soloRankOrNOt = 0;
+      if (data.length === 2) {
+        soloRankOrNOt = 1;
+      }
+      console.log(data);
+      this.setState({
+        tier: data[soloRankOrNOt].tier,
+        rank: data[soloRankOrNOt].rank,
+        leaguePoints: data[soloRankOrNOt].leaguePoints,
+        queueType: data[soloRankOrNOt].queueType,
+        totalWins: data[soloRankOrNOt].wins,
+        totalLosses: data[soloRankOrNOt].losses,
+      });
     }
-    console.log(data);
-    this.setState({
-      tier: data[soloRankOrNOt].tier,
-      rank: data[soloRankOrNOt].rank,
-      leaguePoints: data[soloRankOrNOt].leaguePoints,
-      queueType: data[soloRankOrNOt].queueType,
-      totalWins: data[soloRankOrNOt].wins,
-      totalLosses: data[soloRankOrNOt].losses,
-    });
     // 게임 리스트 정보
     const data_matchLists = await axios.get(
       `/lol/match/v4/matchlists/by-account/${this.state.accountId}?api_key=${this.state.api_key}`
@@ -119,7 +140,10 @@ class Profile extends React.Component {
     var recentAssists = 0;
 
     // 게임 리스트 정보 중 N개만 선택
-    const numOfRecentGames = 5;
+    var numOfRecentGames = 5;
+    if (data_matchLists.data.matches.length < 5) {
+      numOfRecentGames = data_matchLists.data.matches.length;
+    }
     const totalMatchLists = data_matchLists.data.matches.slice(0, 20);
     const matchLists = totalMatchLists.slice(0, numOfRecentGames);
 
@@ -276,7 +300,8 @@ class Profile extends React.Component {
         ctx.font = fontSize + "em sans-serif";
         ctx.textBaseline = "middle";
 
-        var text = String(Math.round((recentWins / 5) * 100)) + "%",
+        var text =
+            String(Math.round((recentWins / numOfRecentGames) * 100)) + "%",
           textX = Math.round((width - ctx.measureText(text).width) / 2),
           textY = (height + 28) / 2;
 
@@ -312,6 +337,7 @@ class Profile extends React.Component {
   render() {
     const {
       isLoading,
+      isSummonerExist,
       name,
       summonerLevel,
       profileIconId,
@@ -332,206 +358,230 @@ class Profile extends React.Component {
     } = this.state;
 
     return (
-      <div className="flex justify-center w-screen h-screen bg-gray-200">
+      <div className="flex flex-col w-screen h-screen bg-gray-200">
+        <Navigation />
         {isLoading ? (
-          <div>Loading...</div>
-        ) : (
-          <div className="">
-            <div className="mt-12 mx-24 flex flex-row justify-between items-center">
-              <div className="flex flex-row">
-                <div className="relative">
-                  <img
-                    className="w-28 h-28 mr-8"
-                    src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/profileicon/${profileIconId}.png`}
-                  />
-                  <div className="absolute -top-2 -left-2">
-                    <div className="relative">
-                      <img
-                        className="w-32 h-32"
-                        src={`/images/tier_border/${tier.toLowerCase()}.png`}
-                      />
-                      <div className="font-bold text-lg level-wrap text-yellow-500 bg-gray-700 border border-yellow-500 rounded-lg px-2 pb-1">
-                        {summonerLevel}
-                      </div>
-                    </div>
-                  </div>
+          isSummonerExist ? (
+            <div className="h-screen flex justify-center items-center">
+              <img src={loading} />
+            </div>
+          ) : (
+            <div className="h-screen flex justify-center items-center">
+              <div className="flex flex-col text-center font-semibold text-2xl">
+                <div className="text-red-600">
+                  등록되지 않았거나 최근 전적이 없는 소환사 입니다.
                 </div>
                 <div>
-                  <div className="flex items-center mr-20">
-                    <div className="font-semibold text-2xl mr-2">{name}</div>
-                  </div>
-                  <div className="">
-                    {tier} {rank} {leaguePoints}LP
-                  </div>
-                  <div className="">
-                    {totalWins}승 {totalLosses}패
-                  </div>
-                  <div className="">
-                    승률{" "}
-                    {Math.round((totalWins / (totalWins + totalLosses)) * 100)}%
-                  </div>
-                </div>
-              </div>
-              <div className="">
-                <canvas
-                  className="mb-3"
-                  id="recentWinRateChart"
-                  width="200"
-                  height="200"
-                ></canvas>
-                <div className="text-center">
-                  <div>최근 전적</div>
-                  <div>
-                    <span className="mr-2 font-semibold">
-                      {numOfRecentGames}전
-                    </span>
-                    <span className="mr-2 font-semibold">{recentWins}승</span>
-                    <span className="font-semibold">{recentLossess}패</span>
-                  </div>
-                  <div>
-                    <span className="mr-1 font-semibold">
-                      {(recentKills / numOfRecentGames).toFixed(1)}
-                    </span>
-                    <span className="mr-1 font-semibold">/</span>
-                    <span className="text-red-600 mr-1 font-semibold">
-                      {(recentDeaths / numOfRecentGames).toFixed(1)}
-                    </span>
-                    <span className="mr-1 font-semibold">/</span>
-                    <span className="font-semibold">
-                      {(recentAssists / numOfRecentGames).toFixed(1)}
-                    </span>
-                  </div>
+                  This is an unregistered summoner or who doesn't have recent
+                  game result.
                 </div>
               </div>
             </div>
-
-            <div className="mt-16">
-              {matchInfoList.map((match, i) => {
-                var bg_color = "";
-                var border_color = "";
-                var text_color = "";
-                if (match.win === "승리") {
-                  bg_color = "bg-blue-300";
-                  border_color = "border-blue-500";
-                  text_color = "text-blue-700";
-                } else if (match.win === "패배") {
-                  bg_color = "bg-red-300";
-                  border_color = "border-red-500";
-                  text_color = "text-red-700";
-                } else {
-                  bg_color = "bg-gray-400";
-                  border_color = "border-gray-600";
-                }
-                return (
-                  <div
-                    className={`${bg_color} mx-20 mb-3 border ${border_color} rounded-md`}
-                    key={i}
-                  >
-                    <div className="flex flex-row justify-center items-center mb-1 mx-5">
-                      <div className="mr-4 text-center flex-grow-1">
-                        <div className="font-medium text-lg">
-                          {match.queueType}
-                        </div>
-                        <div className={`font-semibold text-lg ${text_color}`}>
-                          {match.win}
-                        </div>
-                        <div className="font-medium text-base">
-                          {Math.floor(match.gameDuration / 60)}분{" "}
-                          {match.gameDuration % 60}초
-                        </div>
-                      </div>
-                      <div className="flex-grow-1 flex flex-col items-center">
+          )
+        ) : (
+          <div className="w-screen flex justify-center">
+            <div className="flex flex-col w-1000">
+              <div className="mt-12 mx-32 flex flex-row justify-between items-center">
+                <div className="flex flex-row">
+                  <div className="relative">
+                    <img
+                      className="w-28 h-28 mr-8"
+                      src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/profileicon/${profileIconId}.png`}
+                    />
+                    <div className="absolute -top-2 -left-2">
+                      <div className="relative">
                         <img
-                          className="mt-2 rounded-full w-20 h-20 mb-px content-center"
-                          src={`https://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${match.championName}.png`}
+                          className="w-32 h-32"
+                          src={`/images/tier_border/${tier.toLowerCase()}.png`}
                         />
-                        <div className="font-medium text-base text-center">
-                          {match.championName}
-                        </div>
-                      </div>
-                      <div className="flex-grow-1">
-                        <div className="flex flex-col-2">
-                          <div className="ml-4">
-                            <img
-                              className="w-8 h-8 mb-2 rounded-lg"
-                              src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/spell/${match.spell1Id}.png`}
-                            />
-                            <img
-                              className="w-8 h-8 rounded-lg"
-                              src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/spell/${match.spell2Id}.png`}
-                            />
-                          </div>
-                          <div className="ml-px">
-                            <img
-                              className="w-8 h-8 bg-black rounded-lg mb-2"
-                              src={`https://ddragon.leagueoflegends.com/cdn/img/${match.perkMain_img}`}
-                            />
-                            <img
-                              className="w-8 h-8 bg-black rounded-lg"
-                              src={`https://ddragon.leagueoflegends.com/cdn/img/${match.perkSub_img}`}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="ml-4 flex-grow-1 flex flex-col items-center">
-                        <div className="text-center">
-                          <span className="font-bold text-xl">
-                            {match.kills}
-                          </span>
-                          <span className="mx-px font-bold text-xl">/</span>
-                          <span className="font-bold text-xl text-red-700">
-                            {match.deaths}
-                          </span>
-                          <span className="mx-px font-bold text-xl">/</span>
-                          <span className="font-bold text-xl">
-                            {match.assists}
-                          </span>
-                        </div>
-                        <span className="font-semibold text-base text-center">
-                          {match.average}
-                          <span className="font-medium ml-px text-center">
-                            평점
-                          </span>
-                        </span>
-                      </div>
-                      <div className="ml-4 flex-grow-1 text-center font-medium">
-                        <div className="">레벨 {match.champLevel}</div>
-                        <div>
-                          CS {match.cs} (
-                          {Math.round(
-                            (match.cs * 10) / (match.gameDuration / 60)
-                          ) / 10}
-                          )
-                        </div>
-                        <div>시야점수 {match.visionScore}</div>
-                      </div>
-
-                      <div className="flex-grow-2">
-                        <div className="ml-4 flex">
-                          {match.item.map((item, j) => {
-                            if (item === 0) {
-                              return (
-                                <div
-                                  className="w-8 h-8 bg-gray-600 mx-px rounded-md"
-                                  key={j}
-                                ></div>
-                              );
-                            } else {
-                              return (
-                                <img
-                                  className="w-8 h-8 mx-px rounded-md"
-                                  key={j}
-                                  src={`https://ddragon.leagueoflegends.com/cdn/${patch}/img/item/${item}.png`}
-                                />
-                              );
-                            }
-                          })}
+                        <div className="font-bold text-lg level-wrap text-yellow-500 bg-gray-700 border border-yellow-500 rounded-lg px-2 pb-1">
+                          {summonerLevel}
                         </div>
                       </div>
                     </div>
                   </div>
-                );
-              })}
+                  <div>
+                    <div className="flex items-center mr-20">
+                      <div className="font-semibold text-2xl mr-2">{name}</div>
+                    </div>
+                    <div className="">
+                      {tier} {rank} {leaguePoints}LP
+                    </div>
+                    <div className="">
+                      {totalWins}승 {totalLosses}패
+                    </div>
+                    <div className="">
+                      승률{" "}
+                      {Math.round(
+                        (totalWins / (totalWins + totalLosses)) * 100
+                      )}
+                      %
+                    </div>
+                  </div>
+                </div>
+                <div className="">
+                  <canvas
+                    className="mb-3"
+                    id="recentWinRateChart"
+                    width="200"
+                    height="200"
+                  ></canvas>
+                  <div className="text-center">
+                    <div>최근 전적</div>
+                    <div>
+                      <span className="mr-2 font-semibold">
+                        {numOfRecentGames}전
+                      </span>
+                      <span className="mr-2 font-semibold">{recentWins}승</span>
+                      <span className="font-semibold">{recentLossess}패</span>
+                    </div>
+                    <div>
+                      <span className="mr-1 font-semibold">
+                        {(recentKills / numOfRecentGames).toFixed(1)}
+                      </span>
+                      <span className="mr-1 font-semibold">/</span>
+                      <span className="text-red-600 mr-1 font-semibold">
+                        {(recentDeaths / numOfRecentGames).toFixed(1)}
+                      </span>
+                      <span className="mr-1 font-semibold">/</span>
+                      <span className="font-semibold">
+                        {(recentAssists / numOfRecentGames).toFixed(1)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-16">
+                {matchInfoList.map((match, i) => {
+                  var bg_color = "";
+                  var border_color = "";
+                  var text_color = "";
+                  if (match.win === "승리") {
+                    bg_color = "bg-blue-300";
+                    border_color = "border-blue-500";
+                    text_color = "text-blue-700";
+                  } else if (match.win === "패배") {
+                    bg_color = "bg-red-300";
+                    border_color = "border-red-500";
+                    text_color = "text-red-700";
+                  } else {
+                    bg_color = "bg-gray-400";
+                    border_color = "border-gray-600";
+                  }
+                  return (
+                    <div
+                      className={`${bg_color} mx-20 mb-3 border ${border_color} rounded-md`}
+                      key={i}
+                    >
+                      <div className="flex flex-row justify-center items-center mb-1 mx-5">
+                        <div className="mr-4 text-center flex-grow-1">
+                          <div className="font-medium text-lg">
+                            {match.queueType}
+                          </div>
+                          <div
+                            className={`font-semibold text-lg ${text_color}`}
+                          >
+                            {match.win}
+                          </div>
+                          <div className="font-medium text-base">
+                            {Math.floor(match.gameDuration / 60)}분{" "}
+                            {match.gameDuration % 60}초
+                          </div>
+                        </div>
+                        <div className="flex-grow-1 flex flex-col items-center">
+                          <img
+                            className="mt-2 rounded-full w-20 h-20 mb-px content-center"
+                            src={`https://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${match.championName}.png`}
+                          />
+                          <div className="font-medium text-base text-center">
+                            {match.championName}
+                          </div>
+                        </div>
+                        <div className="flex-grow-1">
+                          <div className="flex flex-col-2">
+                            <div className="ml-4">
+                              <img
+                                className="w-8 h-8 mb-2 rounded-lg"
+                                src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/spell/${match.spell1Id}.png`}
+                              />
+                              <img
+                                className="w-8 h-8 rounded-lg"
+                                src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/spell/${match.spell2Id}.png`}
+                              />
+                            </div>
+                            <div className="ml-px">
+                              <img
+                                className="w-8 h-8 bg-black rounded-lg mb-2"
+                                src={`https://ddragon.leagueoflegends.com/cdn/img/${match.perkMain_img}`}
+                              />
+                              <img
+                                className="w-8 h-8 bg-black rounded-lg"
+                                src={`https://ddragon.leagueoflegends.com/cdn/img/${match.perkSub_img}`}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="ml-4 flex-grow-1 flex flex-col items-center">
+                          <div className="text-center">
+                            <span className="font-bold text-xl">
+                              {match.kills}
+                            </span>
+                            <span className="mx-px font-bold text-xl">/</span>
+                            <span className="font-bold text-xl text-red-700">
+                              {match.deaths}
+                            </span>
+                            <span className="mx-px font-bold text-xl">/</span>
+                            <span className="font-bold text-xl">
+                              {match.assists}
+                            </span>
+                          </div>
+                          <span className="font-semibold text-base text-center">
+                            {match.average}
+                            <span className="font-medium ml-px text-center">
+                              평점
+                            </span>
+                          </span>
+                        </div>
+                        <div className="ml-4 flex-grow-1 text-center font-medium">
+                          <div className="">레벨 {match.champLevel}</div>
+                          <div>
+                            CS {match.cs} (
+                            {Math.round(
+                              (match.cs * 10) / (match.gameDuration / 60)
+                            ) / 10}
+                            )
+                          </div>
+                          <div>시야점수 {match.visionScore}</div>
+                        </div>
+
+                        <div className="flex-grow-2">
+                          <div className="ml-4 flex">
+                            {match.item.map((item, j) => {
+                              if (item === 0) {
+                                return (
+                                  <div
+                                    className="w-8 h-8 bg-gray-600 mx-px rounded-md"
+                                    key={j}
+                                  ></div>
+                                );
+                              } else {
+                                return (
+                                  <img
+                                    className="w-8 h-8 mx-px rounded-md"
+                                    key={j}
+                                    src={`https://ddragon.leagueoflegends.com/cdn/${patch}/img/item/${item}.png`}
+                                  />
+                                );
+                              }
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
