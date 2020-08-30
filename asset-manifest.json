@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/lol_profile/static/css/main.e42afca7.chunk.css",
-    "main.js": "/lol_profile/static/js/main.d4e4de52.chunk.js",
-    "main.js.map": "/lol_profile/static/js/main.d4e4de52.chunk.js.map",
+    "main.js": "/lol_profile/static/js/main.0e54b3a6.chunk.js",
+    "main.js.map": "/lol_profile/static/js/main.0e54b3a6.chunk.js.map",
     "runtime-main.js": "/lol_profile/static/js/runtime-main.508294aa.js",
     "runtime-main.js.map": "/lol_profile/static/js/runtime-main.508294aa.js.map",
     "static/js/2.49407f64.chunk.js": "/lol_profile/static/js/2.49407f64.chunk.js",
     "static/js/2.49407f64.chunk.js.map": "/lol_profile/static/js/2.49407f64.chunk.js.map",
     "index.html": "/lol_profile/index.html",
-    "precache-manifest.27827a660f1d6418247b0a6996d5ac85.js": "/lol_profile/precache-manifest.27827a660f1d6418247b0a6996d5ac85.js",
+    "precache-manifest.9a7e5f024df9dc7c587c66f12e9256d8.js": "/lol_profile/precache-manifest.9a7e5f024df9dc7c587c66f12e9256d8.js",
     "service-worker.js": "/lol_profile/service-worker.js",
     "static/css/main.e42afca7.chunk.css.map": "/lol_profile/static/css/main.e42afca7.chunk.css.map",
     "static/js/2.49407f64.chunk.js.LICENSE.txt": "/lol_profile/static/js/2.49407f64.chunk.js.LICENSE.txt",
@@ -18,6 +18,6 @@
     "static/js/runtime-main.508294aa.js",
     "static/js/2.49407f64.chunk.js",
     "static/css/main.e42afca7.chunk.css",
-    "static/js/main.d4e4de52.chunk.js"
+    "static/js/main.0e54b3a6.chunk.js"
   ]
 }
