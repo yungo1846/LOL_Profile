@@ -165,7 +165,7 @@ class GetDetail extends React.Component {
         ></script>
         {isLoading ? (
           <div className="flex justify-center">
-            <img src={loading} className="w-24 h-24" />
+            <img src={loading} className="w-24 h-24" alt="loading" />
           </div>
         ) : (
           <div>
@@ -184,6 +184,7 @@ class GetDetail extends React.Component {
                     <img
                       className="rounded-full w-10 h-10 content-center"
                       src={`https://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${player.championName}.png`}
+                      alt={`${player.championName}`}
                     />
                     <div className="font-medium text-sm text-center">
                       Lv.{player.champLevel}
@@ -195,20 +196,24 @@ class GetDetail extends React.Component {
                         <img
                           className="w-6 h-6 mb-2 rounded-lg"
                           src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/spell/${player.spell1Id}.png`}
+                          alt={`${player.spell1Id}`}
                         />
                         <img
                           className="w-6 h-6 rounded-lg"
                           src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/spell/${player.spell2Id}.png`}
+                          alt={`${player.spell2Id}`}
                         />
                       </div>
                       <div className="ml-px">
                         <img
                           className="w-6 h-6 bg-black rounded-lg mb-2"
                           src={`https://ddragon.leagueoflegends.com/cdn/img/${player.perkMain_img}`}
+                          alt={`${player.perkMain_img}`}
                         />
                         <img
                           className="w-6 h-6 bg-black rounded-lg"
                           src={`https://ddragon.leagueoflegends.com/cdn/img/${player.perkSub_img}`}
+                          alt={`${player.perkSub_img}`}
                         />
                       </div>
                     </div>
@@ -262,6 +267,7 @@ class GetDetail extends React.Component {
                               className="w-8 h-8 mx-px rounded-md"
                               key={j}
                               src={`https://ddragon.leagueoflegends.com/cdn/${patch}/img/item/${item}.png`}
+                              alt={`${item}`}
                             />
                           );
                         }

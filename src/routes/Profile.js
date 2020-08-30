@@ -14,7 +14,7 @@ class Profile extends React.Component {
     clickedButtonList: Array.from({ length: 100 }, (v, i) => false),
     numOfgetMoreBtnClicked: 0,
     isSummonerExist: true,
-    api_key: "",
+    api_key: "RGAPI-ff1cde54-0500-4fe5-a858-d8ff7a15d871",
     name: this.props.match.params.name, //this.props.location.profile,
     matchInfoList: [],
   };
@@ -312,7 +312,7 @@ class Profile extends React.Component {
       },
     });
     var ctx = document.getElementById("recentWinRateChart").getContext("2d");
-    var DoughnutChart = new Chart(ctx, {
+    new Chart(ctx, {
       type: "doughnut",
       data: {
         labels: ["승리", "패배"],
@@ -330,7 +330,6 @@ class Profile extends React.Component {
       },
       options: {},
     });
-    console.log(this.state);
   };
 
   addNumOfGetMoreBtn = () => {
@@ -395,12 +394,11 @@ class Profile extends React.Component {
       numOfLoadedGames,
       totalMatchLists,
     } = this.state;
-    const { buttonClicked, isButtonClicked, addNumOfGetMoreBtn } = this;
+    const { addNumOfGetMoreBtn } = this;
     var countGetMoreBtnList = Array.from(
       { length: numOfgetMoreBtnClicked },
       (v, i) => i
     );
-    console.log(numOfLoadedGames);
     return (
       <div className="flex flex-col w-screen">
         <script
@@ -434,12 +432,14 @@ class Profile extends React.Component {
                   <div className="relative">
                     <img
                       className="w-28 h-28 mr-8"
+                      alt={`${profileIconId}`}
                       src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/profileicon/${profileIconId}.png`}
                     />
                     <div className="absolute -top-2 -left-2">
                       <div className="relative">
                         <img
                           className="w-32 h-32"
+                          alt={`${tier}`}
                           src={`/images/tier_border/${tier.toLowerCase()}.png`}
                         />
                         <div className="font-bold text-lg level-wrap text-yellow-500 bg-gray-700 border border-yellow-500 rounded-lg px-2 pb-1">
@@ -540,6 +540,7 @@ class Profile extends React.Component {
                         <div className="flex-grow-1 flex flex-col items-center">
                           <img
                             className="mt-2 rounded-full w-20 h-20 mb-px content-center"
+                            alt={`${match.championName}`}
                             src={`https://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${match.championName}.png`}
                           />
                           <div className="font-medium text-base text-center">
@@ -551,20 +552,24 @@ class Profile extends React.Component {
                             <div className="ml-4">
                               <img
                                 className="w-8 h-8 mb-2 rounded-lg"
+                                alt={`${match.spell1Id}`}
                                 src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/spell/${match.spell1Id}.png`}
                               />
                               <img
                                 className="w-8 h-8 rounded-lg"
+                                alt={`${match.spell2Id}`}
                                 src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/spell/${match.spell2Id}.png`}
                               />
                             </div>
                             <div className="ml-px">
                               <img
                                 className="w-8 h-8 bg-black rounded-lg mb-2"
+                                alt={`${match.perkMain_img}`}
                                 src={`https://ddragon.leagueoflegends.com/cdn/img/${match.perkMain_img}`}
                               />
                               <img
                                 className="w-8 h-8 bg-black rounded-lg"
+                                alt={`${match.perkSub_img}`}
                                 src={`https://ddragon.leagueoflegends.com/cdn/img/${match.perkSub_img}`}
                               />
                             </div>
@@ -618,6 +623,7 @@ class Profile extends React.Component {
                                   <img
                                     className="w-8 h-8 mx-px rounded-md"
                                     key={j}
+                                    alt={`${item}`}
                                     src={`https://ddragon.leagueoflegends.com/cdn/${patch}/img/item/${item}.png`}
                                   />
                                 );

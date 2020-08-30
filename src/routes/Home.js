@@ -10,7 +10,7 @@ class Home extends React.Component {
   handleSubmit = () => {
     const { name } = this.state;
     const href = "http://localhost:3000/#/"; //배포시 href 주소 바꿔야함! Navigation도!
-    if (name != "") {
+    if (name !== "") {
       window.location.href = `${href}profile/${name}`;
     }
   };
@@ -39,14 +39,21 @@ class Home extends React.Component {
           ></script>
         </Helmet>
         <div className="flex flex-col items-center mb-10">
-          <img className="w-20 h-20 mb-3" src="/images/logo/lol_icon.png" />
-          <img className="h-32 p-2" src="/images/logo/logo2.png" />
+          <img
+            className="w-20 h-20 mb-3"
+            src="/images/logo/lol_icon.png"
+            alt="lol icon"
+          />
+          <img
+            className="h-32 p-2"
+            src="/images/logo/logo2.png"
+            alt="lol logo"
+          />
         </div>
         <div className="flex flex-row mb-20">
           <form>
             <input
               className="w-64 h-12 text-center rounded-lg border border-blue-400 mr-3"
-              placeholder="이름"
               value={name}
               placeholder="소환사 이름으로 검색"
               onChange={handleChange}

@@ -199,7 +199,6 @@ class GetMoreProfile extends React.Component {
       };
       matchInfoList.push(matchInfo);
     }
-    console.log(matchInfoList);
     this.setState({
       matchInfoList: matchInfoList,
       isLoading: false,
@@ -216,8 +215,6 @@ class GetMoreProfile extends React.Component {
 
   buttonClicked = (id) => {
     var { clickedButtonList } = this.state;
-    console.log(clickedButtonList);
-    console.log(id);
     if (clickedButtonList[id] === false) {
       clickedButtonList[id] = true;
     } else {
@@ -229,7 +226,6 @@ class GetMoreProfile extends React.Component {
   };
 
   componentDidMount() {
-    console.log(this.props);
     const api_key = this.props.api_key;
     var totalMatchLists = this.props.totalMatchLists;
     const numOfLoadedGames = this.props.numOfLoadedGames;
@@ -260,12 +256,11 @@ class GetMoreProfile extends React.Component {
       name,
       numOfLoadedGames,
     } = this.state;
-    const { buttonClicked } = this;
     return (
       <div>
         {isLoading ? (
           <div className="flex justify-center">
-            <img src={loading} className="w-32" />
+            <img src={loading} className="w-32" alt="loading" />
           </div>
         ) : (
           <div className="mt-16">
@@ -312,6 +307,7 @@ class GetMoreProfile extends React.Component {
                         <img
                           className="mt-2 rounded-full w-20 h-20 mb-px content-center"
                           src={`https://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${match.championName}.png`}
+                          alt={`${match.championName}`}
                         />
                         <div className="font-medium text-base text-center">
                           {match.championName}
@@ -323,20 +319,24 @@ class GetMoreProfile extends React.Component {
                             <img
                               className="w-8 h-8 mb-2 rounded-lg"
                               src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/spell/${match.spell1Id}.png`}
+                              alt={`${match.spell1Id}`}
                             />
                             <img
                               className="w-8 h-8 rounded-lg"
                               src={`http://ddragon.leagueoflegends.com/cdn/${patch}/img/spell/${match.spell2Id}.png`}
+                              alt={`${match.spell2Id}`}
                             />
                           </div>
                           <div className="ml-px">
                             <img
                               className="w-8 h-8 bg-black rounded-lg mb-2"
                               src={`https://ddragon.leagueoflegends.com/cdn/img/${match.perkMain_img}`}
+                              alt={`${match.perkMain_img}`}
                             />
                             <img
                               className="w-8 h-8 bg-black rounded-lg"
                               src={`https://ddragon.leagueoflegends.com/cdn/img/${match.perkSub_img}`}
+                              alt={`${match.perkSub_img}`}
                             />
                           </div>
                         </div>
@@ -390,20 +390,32 @@ class GetMoreProfile extends React.Component {
                                   className="w-8 h-8 mx-px rounded-md"
                                   key={j}
                                   src={`https://ddragon.leagueoflegends.com/cdn/${patch}/img/item/${item}.png`}
+                                  alt={`${item}`}
                                 />
                               );
                             }
                           })}
                         </div>
                       </div>
-                      <button
-                        onClick={this.buttonClicked.bind(
-                          this,
-                          id + numOfLoadedGames
-                        )}
-                      >
-                        <i className="fas fa-angle-down"></i>
-                      </button>
+                      {clickedButtonList[id + numOfLoadedGames] ? (
+                        <button
+                          onClick={this.buttonClicked.bind(
+                            this,
+                            id + numOfLoadedGames
+                          )}
+                        >
+                          <i className="fas fa-angle-up"></i>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={this.buttonClicked.bind(
+                            this,
+                            id + numOfLoadedGames
+                          )}
+                        >
+                          <i className="fas fa-angle-down"></i>
+                        </button>
+                      )}
                     </div>
                     <div className="flex flex-col justify-center">
                       {clickedButtonList[id + numOfLoadedGames] ? (

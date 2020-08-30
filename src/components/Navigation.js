@@ -11,7 +11,7 @@ class Navigation extends React.Component {
   handleSubmit = () => {
     const { name } = this.state;
     const href = "http://localhost:3000/#/";
-    if (name != "") {
+    if (name !== "") {
       window.location.href = `${href}profile/${name}`;
     }
   };
@@ -41,14 +41,17 @@ class Navigation extends React.Component {
         </Helmet>
         <div className="mx-5 mt-3">
           <a href={home}>
-            <img className="w-12 h-12 mb-3" src="/images/logo/lol_icon.png" />
+            <img
+              className="w-12 h-12 mb-3"
+              src="/images/logo/lol_icon.png"
+              alt="lol icon"
+            />
           </a>
         </div>
         <div className="flex flex-row">
           <form>
             <input
               className="w-64 h-10 text-center rounded-lg border border-blue-400 mr-3"
-              placeholder="이름"
               value={name}
               placeholder="소환사 이름으로 검색"
               onChange={handleChange}
