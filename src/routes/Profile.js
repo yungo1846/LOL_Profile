@@ -5,10 +5,14 @@ import "../index.css";
 import "./Profile.css";
 import Navigation from "../components/Navigation";
 import loading from "./loading.svg";
+import GetMoreProfile from "../components/GetMoreProfile.js";
+import GetDetail from "../components/GetDetail.js";
 
 class Profile extends React.Component {
   state = {
     isLoading: true,
+    isButtonClicked: false,
+    clickedButtonList: [],
     isSummonerExist: true,
     api_key: "",
     name: this.props.match.params.name, //this.props.location.profile,
@@ -114,7 +118,6 @@ class Profile extends React.Component {
       if (data.length === 2) {
         soloRankOrNOt = 1;
       }
-      console.log(data);
       this.setState({
         tier: data[soloRankOrNOt].tier,
         rank: data[soloRankOrNOt].rank,
@@ -128,7 +131,6 @@ class Profile extends React.Component {
     const data_matchLists = await axios.get(
       `/lol/match/v4/matchlists/by-account/${this.state.accountId}?api_key=${this.state.api_key}`
     );
-    console.log(data_matchLists);
 
     // 최근 게임 승리, 패배 기록
     var recentWins = 0;
@@ -144,7 +146,7 @@ class Profile extends React.Component {
     if (data_matchLists.data.matches.length < 5) {
       numOfRecentGames = data_matchLists.data.matches.length;
     }
-    const totalMatchLists = data_matchLists.data.matches.slice(0, 20);
+    const totalMatchLists = data_matchLists.data.matches;
     const matchLists = totalMatchLists.slice(0, numOfRecentGames);
 
     // 각 게임 정보 얻기
@@ -153,7 +155,6 @@ class Profile extends React.Component {
       var match_data = await axios.get(
         `/lol/match/v4/matches/${matchLists[i].gameId}?api_key=${this.state.api_key}`
       );
-      console.log(match_data);
       var queueType = match_data.data.queueId;
       if (queueType === 420) {
         queueType = "솔랭";
@@ -253,9 +254,9 @@ class Profile extends React.Component {
         spell1Id: spell1Name,
         spell2Id: spell2Name,
         champLevel: match_data.data.participants[playerNumber].stats.champLevel,
-        kills: match_data.data.participants[playerNumber].stats.kills,
-        deaths: match_data.data.participants[playerNumber].stats.deaths,
-        assists: match_data.data.participants[playerNumber].stats.assists,
+        kills: kills,
+        deaths: deaths,
+        assists: assists,
         average: average,
         championName: championName,
         visionScore:
@@ -286,7 +287,9 @@ class Profile extends React.Component {
       recentKills: recentKills,
       recentDeaths: recentDeaths,
       recentAssists: recentAssists,
-      numOfRecentGames: numOfRecentGames,
+      numOfLoadedGames: numOfRecentGames, // 표시된 게임 수
+      numOfRecentGames: numOfRecentGames, // 한 번에 표시할 게임 수
+      totalMatchLists: totalMatchLists,
     });
     // 최근 전적 그래프
     Chart.pluginService.register({
@@ -331,15 +334,42 @@ class Profile extends React.Component {
     console.log(this.state);
   };
 
+  buttonClicked = (id) => {
+    var {
+      isButtonClicked,
+      numOfLoadedGames,
+      numOfRecentGames,
+      clickedButtonList,
+    } = this.state;
+    clickedButtonList.push(id);
+    if (isButtonClicked === false) {
+      this.setState({
+        isButtonClicked: true,
+        buttonId: id,
+        clickedButtonList: clickedButtonList,
+        numOfLoadedGames: numOfLoadedGames + numOfRecentGames,
+      });
+    } else {
+      this.setState({
+        isButtonClicked: false,
+      });
+    }
+  };
+
   componentDidMount() {
     this.getSummonerInfo();
   }
+
   render() {
     const {
       isLoading,
+      isButtonClicked,
+      clickedButtonList,
       isSummonerExist,
+      buttonId,
       name,
       summonerLevel,
+      api_key,
       profileIconId,
       tier,
       rank,
@@ -355,10 +385,16 @@ class Profile extends React.Component {
       recentDeaths,
       recentAssists,
       numOfRecentGames,
+      numOfLoadedGames,
+      totalMatchLists,
     } = this.state;
-
+    const { buttonClicked } = this;
     return (
       <div className="flex flex-col w-screen h-screen bg-gray-200">
+        <script
+          src="https://kit.fontawesome.com/843c5da1dc.js"
+          crossorigin="anonymous"
+        ></script>
         <Navigation />
         {isLoading ? (
           isSummonerExist ? (
@@ -453,7 +489,7 @@ class Profile extends React.Component {
               </div>
 
               <div className="mt-16">
-                {matchInfoList.map((match, i) => {
+                {matchInfoList.map((match, id) => {
                   var bg_color = "";
                   var border_color = "";
                   var text_color = "";
@@ -472,7 +508,7 @@ class Profile extends React.Component {
                   return (
                     <div
                       className={`${bg_color} mx-20 mb-3 border ${border_color} rounded-md`}
-                      key={i}
+                      key={id}
                     >
                       <div className="flex flex-row justify-center items-center mb-1 mx-5">
                         <div className="mr-4 text-center flex-grow-1">
@@ -577,6 +613,21 @@ class Profile extends React.Component {
                             })}
                           </div>
                         </div>
+                        <button onClick={this.buttonClicked.bind(this, id)}>
+                          <i className="fas fa-angle-down"></i>
+                        </button>
+                      </div>
+                      <div>
+                        {isButtonClicked && buttonId === id ? (
+                          <GetDetail
+                            name={name}
+                            api_key={api_key}
+                            patch={patch}
+                            gameId={match.gameId}
+                          />
+                        ) : (
+                          <div></div>
+                        )}
                       </div>
                     </div>
                   );
