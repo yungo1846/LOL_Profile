@@ -140,7 +140,6 @@ class GetDetail extends React.Component {
       };
       playerInfoList.push(playerInfo);
     }
-    console.log(playerInfoList);
     this.setState({
       playerInfoList: playerInfoList,
       patch,
@@ -150,7 +149,6 @@ class GetDetail extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props);
     const api_key = this.props.api_key;
     const patch = this.props.patch;
     const gameId = this.props.gameId;
@@ -161,6 +159,10 @@ class GetDetail extends React.Component {
     const { isLoading, playerInfoList, patch, gameDuration } = this.state;
     return (
       <div>
+        <script
+          src="https://kit.fontawesome.com/843c5da1dc.js"
+          crossorigin="anonymous"
+        ></script>
         {isLoading ? (
           <div className="flex justify-center">
             <img src={loading} className="w-24 h-24" />
@@ -212,7 +214,7 @@ class GetDetail extends React.Component {
                     </div>
                   </div>
                   <div className="w-24">
-                    <div className="text-start font-semibold">
+                    <div className="text-start font-semibold text-sm">
                       {player.name}
                     </div>
                   </div>

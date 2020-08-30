@@ -11,8 +11,8 @@ import GetDetail from "../components/GetDetail.js";
 class Profile extends React.Component {
   state = {
     isLoading: true,
-    isButtonClicked: false,
-    clickedButtonList: [],
+    clickedButtonList: Array.from({ length: 100 }, (v, i) => false),
+    numOfgetMoreBtnClicked: 0,
     isSummonerExist: true,
     api_key: "",
     name: this.props.match.params.name, //this.props.location.profile,
@@ -122,7 +122,6 @@ class Profile extends React.Component {
         tier: data[soloRankOrNOt].tier,
         rank: data[soloRankOrNOt].rank,
         leaguePoints: data[soloRankOrNOt].leaguePoints,
-        queueType: data[soloRankOrNOt].queueType,
         totalWins: data[soloRankOrNOt].wins,
         totalLosses: data[soloRankOrNOt].losses,
       });
@@ -287,7 +286,7 @@ class Profile extends React.Component {
       recentKills: recentKills,
       recentDeaths: recentDeaths,
       recentAssists: recentAssists,
-      numOfLoadedGames: numOfRecentGames, // 표시된 게임 수
+      numOfLoadedGames: 0, // 표시된 게임 수
       numOfRecentGames: numOfRecentGames, // 한 번에 표시할 게임 수
       totalMatchLists: totalMatchLists,
     });
@@ -334,26 +333,36 @@ class Profile extends React.Component {
     console.log(this.state);
   };
 
-  buttonClicked = (id) => {
+  addNumOfGetMoreBtn = () => {
     var {
-      isButtonClicked,
+      numOfgetMoreBtnClicked,
       numOfLoadedGames,
       numOfRecentGames,
-      clickedButtonList,
     } = this.state;
-    clickedButtonList.push(id);
-    if (isButtonClicked === false) {
-      this.setState({
-        isButtonClicked: true,
-        buttonId: id,
-        clickedButtonList: clickedButtonList,
-        numOfLoadedGames: numOfLoadedGames + numOfRecentGames,
-      });
+    this.setState({
+      numOfgetMoreBtnClicked: numOfgetMoreBtnClicked + 1,
+      numOfLoadedGames: numOfLoadedGames + numOfRecentGames,
+    });
+  };
+
+  isButtonClicked = (id) => {
+    var { clickedButtonList } = this.state;
+    var result = clickedButtonList.find((button_id) => {
+      return button_id === id;
+    });
+    return result;
+  };
+
+  buttonClicked = (id) => {
+    var { clickedButtonList } = this.state;
+    if (clickedButtonList[id] === false) {
+      clickedButtonList[id] = true;
     } else {
-      this.setState({
-        isButtonClicked: false,
-      });
+      clickedButtonList[id] = false;
     }
+    this.setState({
+      clickedButtonList: clickedButtonList,
+    });
   };
 
   componentDidMount() {
@@ -363,10 +372,9 @@ class Profile extends React.Component {
   render() {
     const {
       isLoading,
-      isButtonClicked,
-      clickedButtonList,
       isSummonerExist,
-      buttonId,
+      clickedButtonList,
+      numOfgetMoreBtnClicked,
       name,
       summonerLevel,
       api_key,
@@ -374,7 +382,6 @@ class Profile extends React.Component {
       tier,
       rank,
       leaguePoints,
-      queueType,
       totalWins,
       totalLosses,
       matchInfoList,
@@ -388,9 +395,14 @@ class Profile extends React.Component {
       numOfLoadedGames,
       totalMatchLists,
     } = this.state;
-    const { buttonClicked } = this;
+    const { buttonClicked, isButtonClicked, addNumOfGetMoreBtn } = this;
+    var countGetMoreBtnList = Array.from(
+      { length: numOfgetMoreBtnClicked },
+      (v, i) => i
+    );
+    console.log(numOfLoadedGames);
     return (
-      <div className="flex flex-col w-screen h-screen bg-gray-200">
+      <div className="flex flex-col w-screen">
         <script
           src="https://kit.fontawesome.com/843c5da1dc.js"
           crossorigin="anonymous"
@@ -613,26 +625,57 @@ class Profile extends React.Component {
                             })}
                           </div>
                         </div>
-                        <button onClick={this.buttonClicked.bind(this, id)}>
-                          <i className="fas fa-angle-down"></i>
-                        </button>
-                      </div>
-                      <div>
-                        {isButtonClicked && buttonId === id ? (
-                          <GetDetail
-                            name={name}
-                            api_key={api_key}
-                            patch={patch}
-                            gameId={match.gameId}
-                          />
+                        {clickedButtonList[id] ? (
+                          <button onClick={this.buttonClicked.bind(this, id)}>
+                            <i className="fas fa-angle-up"></i>
+                          </button>
                         ) : (
-                          <div></div>
+                          <button onClick={this.buttonClicked.bind(this, id)}>
+                            <i className="fas fa-angle-down"></i>
+                          </button>
                         )}
                       </div>
+                      {clickedButtonList[id] ? (
+                        <GetDetail
+                          name={name}
+                          api_key={api_key}
+                          patch={patch}
+                          gameId={match.gameId}
+                          numOfLoadedGames={numOfLoadedGames}
+                        />
+                      ) : (
+                        <div></div>
+                      )}
                     </div>
                   );
                 })}
+                <div>
+                  {numOfgetMoreBtnClicked !== 0 && (
+                    <div>
+                      {countGetMoreBtnList.map((n, i) => {
+                        return (
+                          <GetMoreProfile
+                            name={name}
+                            api_key={api_key}
+                            clickedButtonList={clickedButtonList}
+                            totalMatchLists={totalMatchLists}
+                            numOfLoadedGames={numOfLoadedGames}
+                            numOfRecentGames={numOfRecentGames}
+                            patch={patch}
+                            key={i}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
+              <button
+                onClick={addNumOfGetMoreBtn}
+                className="bg-gray-200 mx-20 h-10 font-medium text-base border text-orange-600 border-orange-300"
+              >
+                더 보기
+              </button>
             </div>
           </div>
         )}
