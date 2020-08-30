@@ -161,7 +161,7 @@ class GetDetail extends React.Component {
       <div>
         <script
           src="https://kit.fontawesome.com/843c5da1dc.js"
-          crossorigin="anonymous"
+          crossOrigin="anonymous"
         ></script>
         {isLoading ? (
           <div className="flex justify-center">

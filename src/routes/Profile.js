@@ -403,7 +403,7 @@ class Profile extends React.Component {
       <div className="flex flex-col w-screen">
         <script
           src="https://kit.fontawesome.com/843c5da1dc.js"
-          crossorigin="anonymous"
+          crossOrigin="anonymous"
         ></script>
         <Navigation />
         {isLoading ? (

@@ -64,7 +64,7 @@ class Home extends React.Component {
             className="bg-indigo-600 w-12 text-white rounded-full"
             onClick={this.handleSubmit}
           >
-            <i class="fas fa-search"></i>
+            <i className="fas fa-search"></i>
           </button>
         </div>
       </div>

@@ -266,7 +266,7 @@ class GetMoreProfile extends React.Component {
           <div className="mt-16">
             <script
               src="https://kit.fontawesome.com/843c5da1dc.js"
-              crossorigin="anonymous"
+              crossOrigin="anonymous"
             ></script>
             {matchInfoList.map((match, id) => {
               var bg_color = "";

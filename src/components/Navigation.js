@@ -36,7 +36,7 @@ class Navigation extends React.Component {
         <Helmet>
           <script
             src="https://kit.fontawesome.com/843c5da1dc.js"
-            crossorigin="anonymous"
+            crossOrigin="anonymous"
           ></script>
         </Helmet>
         <div className="mx-5 mt-3">
