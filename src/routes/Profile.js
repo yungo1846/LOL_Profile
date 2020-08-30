@@ -14,7 +14,7 @@ class Profile extends React.Component {
     clickedButtonList: Array.from({ length: 100 }, (v, i) => false),
     numOfgetMoreBtnClicked: 0,
     isSummonerExist: true,
-    api_key: "RGAPI-ff1cde54-0500-4fe5-a858-d8ff7a15d871",
+    api_key: "",
     name: this.props.match.params.name, //this.props.location.profile,
     matchInfoList: [],
   };
